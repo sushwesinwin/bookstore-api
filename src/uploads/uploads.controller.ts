@@ -16,6 +16,7 @@ const allowedImageTypes = [
   'image/png',
   'image/webp',
   'image/gif',
+  'image/svg+xml',
 ];
 
 @Controller('uploads')

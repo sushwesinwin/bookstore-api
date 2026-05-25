@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
+import { UpdateBestSellerDto } from './dto/update-best-seller.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 
 @Controller('books')
@@ -28,6 +29,11 @@ export class BooksController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.booksService.findOne(id);
+  }
+
+  @Patch(':id/best-seller')
+  updateBestSeller(@Param('id') id: string, @Body() dto: UpdateBestSellerDto) {
+    return this.booksService.updateBestSeller(id, dto.isBestSeller);
   }
 
   @Patch(':id')

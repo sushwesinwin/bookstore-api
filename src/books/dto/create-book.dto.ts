@@ -5,4 +5,5 @@ export class CreateBookDto {
   price: number;
   stock?: number;
   imageUrl?: string;
+  isBestSeller?: boolean;
 }

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
@@ -35,6 +39,19 @@ export class BooksService {
     return this.prisma.book.update({
       where: { id },
       data: dto,
+    });
+  }
+
+  async updateBestSeller(id: string, isBestSeller: boolean) {
+    if (typeof isBestSeller !== 'boolean') {
+      throw new BadRequestException('isBestSeller must be a boolean');
+    }
+
+    await this.findOne(id);
+
+    return this.prisma.book.update({
+      where: { id },
+      data: { isBestSeller },
     });
   }
 

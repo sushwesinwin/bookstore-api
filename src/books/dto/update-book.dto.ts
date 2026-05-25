@@ -5,5 +5,6 @@ export class UpdateBookDto {
   price?: number;
   stock?: number;
   imageUrl?: string;
+  categoryId?: string | null;
   isBestSeller?: boolean;
 }

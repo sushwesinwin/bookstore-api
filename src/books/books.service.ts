@@ -14,17 +14,22 @@ export class BooksService {
   create(dto: CreateBookDto) {
     return this.prisma.book.create({
       data: dto,
+      include: { category: true },
     });
   }
 
   findAll() {
     return this.prisma.book.findMany({
+      include: { category: true },
       orderBy: { createdAt: 'desc' },
     });
   }
 
   async findOne(id: string) {
-    const book = await this.prisma.book.findUnique({ where: { id } });
+    const book = await this.prisma.book.findUnique({
+      where: { id },
+      include: { category: true },
+    });
 
     if (!book) {
       throw new NotFoundException(`Book ${id} not found`);
@@ -39,6 +44,7 @@ export class BooksService {
     return this.prisma.book.update({
       where: { id },
       data: dto,
+      include: { category: true },
     });
   }
 
@@ -52,6 +58,7 @@ export class BooksService {
     return this.prisma.book.update({
       where: { id },
       data: { isBestSeller },
+      include: { category: true },
     });
   }
 

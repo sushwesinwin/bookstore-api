@@ -26,7 +26,6 @@ model Book {
 model Category {
   id        String   @id @default(cuid())
   name      String   @unique
-  imageUrl  String?
   status    String   @default("active")
   books     Book[]
   createdAt DateTime @default(now())

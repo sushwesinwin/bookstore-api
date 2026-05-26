@@ -10,6 +10,11 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 
 const allowedCategoryStatuses = ['active', 'inactive'];
 
+type NormalizedCategoryData = {
+  name?: string;
+  status?: string;
+};
+
 @Injectable()
 export class CategoriesService {
   constructor(private readonly prisma: PrismaService) {}
@@ -17,9 +22,20 @@ export class CategoriesService {
   create(dto: CreateCategoryDto) {
     const data = this.normalizeCategoryData(dto);
 
-    return this.prisma.category.create({ data }).catch((error: unknown) => {
-      this.handlePrismaError(error);
-    });
+    if (!data.name) {
+      throw new BadRequestException('Category name is required');
+    }
+
+    return this.prisma.category
+      .create({
+        data: {
+          name: data.name,
+          status: data.status,
+        },
+      })
+      .catch((error: unknown) => {
+        this.handlePrismaError(error);
+      });
   }
 
   findAll() {
@@ -65,21 +81,21 @@ export class CategoriesService {
     return { id };
   }
 
-  private normalizeCategoryData<
-    T extends CreateCategoryDto | UpdateCategoryDto,
-  >(dto: T) {
-    const data = { ...dto };
+  private normalizeCategoryData(
+    dto: CreateCategoryDto | UpdateCategoryDto,
+  ): NormalizedCategoryData {
+    const data: NormalizedCategoryData = {};
 
-    if (typeof data.name === 'string') {
-      data.name = data.name.trim();
+    if (typeof dto.name === 'string') {
+      data.name = dto.name.trim();
 
       if (!data.name) {
         throw new BadRequestException('Category name is required');
       }
     }
 
-    if (typeof data.status === 'string') {
-      data.status = data.status.trim().toLowerCase();
+    if (typeof dto.status === 'string') {
+      data.status = dto.status.trim().toLowerCase();
 
       if (!allowedCategoryStatuses.includes(data.status)) {
         throw new BadRequestException('Status must be active or inactive');

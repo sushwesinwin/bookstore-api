@@ -18,6 +18,7 @@ model Book {
   imageUrl     String?
   categoryId   String?
   category     Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  cartItems    CartItem[]
   isBestSeller Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -30,4 +31,24 @@ model Category {
   books     Book[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  bookId    String
+  quantity  Int      @default(1)
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, bookId])
 }

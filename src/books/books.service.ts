@@ -12,8 +12,19 @@ export class BooksService {
   constructor(private readonly prisma: PrismaService) {}
 
   create(dto: CreateBookDto) {
+    const { author, categoryId, ...data } = dto;
+
     return this.prisma.book.create({
-      data: dto,
+      data: {
+        ...data,
+        author: {
+          connectOrCreate: {
+            where: { name: author },
+            create: { name: author },
+          },
+        },
+        ...(categoryId ? { category: { connect: { id: categoryId } } } : {}),
+      },
       include: { category: true },
     });
   }
@@ -40,10 +51,24 @@ export class BooksService {
 
   async update(id: string, dto: UpdateBookDto) {
     await this.findOne(id);
+    const { author, categoryId, ...data } = dto;
 
     return this.prisma.book.update({
       where: { id },
-      data: dto,
+      data: {
+        ...data,
+        ...(author
+          ? {
+              author: {
+                connectOrCreate: {
+                  where: { name: author },
+                  create: { name: author },
+                },
+              },
+            }
+          : {}),
+        ...(categoryId ? { category: { connect: { id: categoryId } } } : {}),
+      },
       include: { category: true },
     });
   }
